@@ -557,9 +557,9 @@ Model versions, embedding model, vector-database configuration, retrieval parame
 # Next Steps
 
 - [ ] Confirm the final title and degree-program context with the advisor.
-- [ ] Verify the official Gyeongsang National University thesis template.
-- [ ] Create a complete inventory of target regulations and official source URLs.
-- [ ] Confirm which historical versions and amendment records are publicly available.
+- [x] Verify the official Gyeongsang National University thesis template.
+- [x] Create the pilot inventory of target regulations and official source URLs.
+- [x] Confirm the availability of the 2024 and 2026 Academic Operation Regulation versions.
 - [ ] Define copyright-compliant storage and redistribution rules for source files.
 - [ ] Finalize research questions, baselines, and evaluation metrics.
 - [ ] Recruit a reviewer familiar with graduate-school regulations.
@@ -567,3 +567,32 @@ Model versions, embedding model, vector-database configuration, retrieval parame
 - [ ] Create 30 pilot evaluation questions.
 - [ ] Run a pilot comparison between conventional and time-aware RAG.
 - [ ] Determine whether a usability study requires research-ethics or IRB review.
+
+## Executable Validation Notebook
+
+[`notebooks/01_corpus_validation.ipynb`](notebooks/01_corpus_validation.ipynb) contains the first reproducible corpus test with saved outputs. It performs the following checks:
+
+- Verifies all 16 local files against the byte sizes and SHA-256 digests in the manifest.
+- Extracts text from HTML, PDF, DOCX, and HWPX files.
+- Identifies the legacy binary HWP file that requires a dedicated converter.
+- Displays only short text previews rather than full source documents.
+- Confirms that the official 2024 and 2026 Graduate School Academic Operation Regulation texts are not identical.
+
+Current saved result:
+
+```text
+Manifest entries: 16
+Files present: 16
+Size checks passed: 16
+SHA-256 checks passed: 16
+Text extraction succeeded: 15
+Legacy HWP conversion required: 1
+Extraction failures: 0
+```
+
+Install the notebook dependencies and execute it from the repository root:
+
+```bash
+python -m pip install -r requirements-notebook.txt
+jupyter nbconvert --to notebook --execute --inplace notebooks/01_corpus_validation.ipynb
+```
