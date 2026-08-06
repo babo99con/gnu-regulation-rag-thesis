@@ -114,16 +114,83 @@ Conventional RAG primarily ranks passages according to semantic relevance. In un
 
 ## 3.1 Target Regulation Corpus
 
-Initial candidate sources include:
+The corpus should not indiscriminately include every university regulation. Adding unrelated regulations increases retrieval noise and makes the experimental scope difficult to reproduce. Documents are therefore divided into a primary corpus, a conditional corpus, and operational evidence.
 
-- University rules and general academic regulations.
-- Graduate-school academic-operation regulations.
-- Degree-conferral regulations.
-- Thesis submission and examination guidelines.
-- Research-ethics and plagiarism regulations.
-- Master's thesis-replacement requirements.
-- Department-specific graduation and thesis bylaws.
-- Official notices and attached forms that affect implementation.
+### 3.1.1 Primary Corpus
+
+The following documents are required for the first experiment.
+
+| Priority | Document | Why It Is Required | Confirmed Official Source |
+|---:|---|---|---|
+| 1 | Gyeongsang National University Rules | Defines the university organization, degree programs, enrollment status, and the authority delegated to subordinate regulations | [Current university rules, effective February 27, 2026](https://www.law.go.kr/LSW/schlPubRulInfoP.do?schlPubRulSeq=2200000153007) |
+| 2 | Graduate School Academic Operation Regulations | Defines admission, registration, curricula, credit recognition, transfers, foreign-language examinations, and comprehensive examinations | [Current version, effective February 27, 2026](https://www.law.go.kr/LSW/schlPubRulInfoP.do?schlPubRulSeq=2200000153021) |
+| 3 | Graduate School Degree Conferral Regulations | Defines thesis eligibility, submission, examination, degree conferral, research-student registration, and thesis submission deadlines | [Current version, effective February 27, 2026](https://www.law.go.kr/LSW/schlPubRulInfoP.do?schlPubRulSeq=2200000153023) |
+| 4 | Graduate School Curriculum Operation Guidelines | Provides detailed rules for curriculum organization, course operation, and exceptions | [Version effective January 16, 2024](https://www.law.go.kr/LSW/schlPubRulInfoP.do?schlPubRulSeq=2200000124943) |
+| 5 | General Graduate School Thesis Qualification Examination Guidelines | Provides detailed procedures and exemption conditions for foreign-language and comprehensive examinations | [Version effective November 23, 2021](https://www.law.go.kr/LSW/schlPubRulInfoP.do?schlPubRulSeq=2200000096213) |
+| 6 | Research Ethics Regulations | Defines research-integrity obligations applicable to graduate students and thesis-related research | [Version effective February 28, 2025](https://www.law.go.kr/LSW/schlPubRulInfoP.do?schlPubRulSeq=2200000139977) |
+| 7 | Thesis Writing Guidelines and Templates | Defines the permitted thesis structure, formatting, forms, and submission conventions | [Graduate School guidelines and templates, June 13, 2025](https://www.gnu.ac.kr/graduate/na/ntt/selectNttInfo.do?bbsId=1215&mi=2382&nttSn=2326423) |
+| 8 | Current Thesis Examination and Master's Alternative-Achievement Notices | Provides semester-specific dates, required forms, review procedures, and implementation details that may not appear in regulations | [Graduate School notices](https://www.gnu.ac.kr/graduate/na/ntt/selectNttList.do?bbsId=1212) |
+| 9 | Department-Specific Graduation and Thesis Bylaws | Contains additional publication, authorship, language, presentation, and graduation requirements | Individual department websites or documents; a complete inventory must be created after the target department is selected |
+| 10 | Historical Versions, Amendment Texts, and Supplementary Provisions | Enables version-sensitive questions, temporal conflict experiments, and provision-level change tracking | The history, amendment, comparison, and attachment tabs associated with each National Law Information Center regulation page |
+
+The URL initially provided for this project is the Graduate School Academic Operation Regulations **effective January 16, 2024**, not the current 2026 version. It should be preserved as historical evidence rather than labeled as current:
+
+- [Graduate School Academic Operation Regulations, effective January 16, 2024](https://www.law.go.kr/LSW/schlPubRulInfoP.do?schlPubRulSeq=2200000124859)
+
+This coexistence of a 2024 version and a 2026 version is an appropriate pilot case for evaluating whether a conventional RAG system retrieves an obsolete but semantically similar provision.
+
+### 3.1.2 Additional Documents Required by Specific Questions
+
+The following documents should be indexed only when their corresponding question types are included in the evaluation dataset.
+
+| Conditional Document | Inclusion Condition | Official Source Example |
+|---|---|---|
+| Bachelor's-Master's and Bachelor's-Master's-Doctoral Integrated Program Regulations | Questions from students in an integrated degree program | [Integrated program regulations](https://www.law.go.kr/LSW/schlPubRulInfoP.do?schlPubRulSeq=2200000130859) |
+| Double Master's and Doctoral Degree Regulations | Questions involving jointly operated or international double-degree programs | [Double-degree regulations](https://www.law.go.kr/LSW/schlPubRulInfoP.do?schlPubRulSeq=2200000091727) |
+| Graduate Microdegree Guidelines | Questions involving graduate microdegrees and credit recognition | [Microdegree guidelines](https://www.law.go.kr/LSW/schlPubRulInfoP.do?schlPubRulSeq=2200000153039) |
+| Full-Time Scholarship Conditions and Performance Obligations | Questions involving thesis eligibility restrictions for scholarship recipients | Graduate School scholarship notices and attached obligation forms |
+| Completed-Student or Research-Student Registration Guidelines | Questions submitted after the ordinary thesis-submission period or after program completion | General graduate-school rules and any separately published implementation guidelines |
+| Special Graduate School Academic Regulations | The research scope includes the education, public health, convergence, entrepreneurship, or another special graduate school | The applicable graduate school's regulation page; special-graduate-school rules must not be mixed with general-graduate-school rules without an organization filter |
+| Research Integrity Committee Regulations | Questions require procedures for investigating research misconduct rather than general ethical duties | Official university or National Law Information Center regulation page when located and verified |
+| Admission Guides by Academic Year | Admission-cohort applicability or program-entry conditions form part of the question | [Graduate School admission notices](https://www.gnu.ac.kr/graduate/na/ntt/selectNttList.do?bbsId=1206&mi=2314) |
+
+### 3.1.3 Operational Evidence
+
+Regulations define normative requirements, whereas notices describe how those requirements are implemented in a particular semester. The two types must be stored separately.
+
+- Semester thesis-examination schedules.
+- Application windows for thesis and alternative achievements.
+- Foreign-language and comprehensive examination schedules.
+- Required application forms and system-submission instructions.
+- Department announcements that restate or supplement university-wide requirements.
+- Contact information for the responsible administrative office.
+
+Operational notices must include a publication date, target semester, responsible organization, and expiration or archival status. A notice must not override a higher-level regulation unless the regulation explicitly delegates the relevant detail.
+
+### 3.1.4 Initial Exclusions
+
+The following materials should be excluded from the first experiment unless a research question explicitly requires them:
+
+- Regulations for unrelated undergraduate academic matters.
+- Committee-operation regulations that do not affect student eligibility or procedures.
+- Regulations belonging exclusively to a special graduate school outside the selected scope.
+- News articles, unofficial blog posts, and student-community explanations as answer evidence.
+- Draft amendments that have not been promulgated, except in a separately labeled amendment-analysis dataset.
+
+### 3.1.5 Source Authority and Conflict Policy
+
+Each collected item must be assigned both a `document_type` and an `authority_level`.
+
+```text
+Promulgated university rules
+    -> promulgated university regulations
+    -> officially issued guidelines
+    -> department bylaws
+    -> semester-specific official notices
+    -> forms and explanatory material
+```
+
+When two sources conflict, the system must not resolve the conflict by vector similarity alone. It must compare authority, organization, promulgation status, effective period, and transitional provisions. Draft amendments and unofficial explanations may be used for analysis but must never be presented as current binding rules.
 
 The final corpus scope must be fixed before evaluation so that the system is not tested against documents it was not designed to cover.
 
