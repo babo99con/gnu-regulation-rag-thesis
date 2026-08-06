@@ -568,15 +568,16 @@ Model versions, embedding model, vector-database configuration, retrieval parame
 - [ ] Run a pilot comparison between conventional and time-aware RAG.
 - [ ] Determine whether a usability study requires research-ethics or IRB review.
 
-## Executable Validation Notebook
+## Executable Corpus Notebooks
 
-[`notebooks/01_corpus_validation.ipynb`](notebooks/01_corpus_validation.ipynb) contains the first reproducible corpus test with saved outputs. It performs the following checks:
+The original all-in-one validation notebook is divided into four small, ordered notebooks. They contain saved outputs and can be opened individually for inspection. No LLM, API key, or paid token is required.
 
-- Verifies all 16 local files against the byte sizes and SHA-256 digests in the manifest.
-- Extracts text from HTML, PDF, DOCX, and HWPX files.
-- Identifies the legacy binary HWP file that requires a dedicated converter.
-- Displays only short text previews rather than full source documents.
-- Confirms that the official 2024 and 2026 Graduate School Academic Operation Regulation texts are not identical.
+1. [`notebooks/00_download_sources.ipynb`](notebooks/00_download_sources.ipynb) downloads missing documents from the official URLs in the manifest and verifies them immediately.
+2. [`notebooks/01_validate_sources.ipynb`](notebooks/01_validate_sources.ipynb) checks the presence, byte size, SHA-256 digest, and file signature of all 16 documents.
+3. [`notebooks/02_extract_source_text.ipynb`](notebooks/02_extract_source_text.ipynb) extracts HTML, PDF, DOCX, and HWPX text and displays short previews. It also identifies the legacy HWP file that requires a converter.
+4. [`notebooks/03_compare_regulation_versions.ipynb`](notebooks/03_compare_regulation_versions.ipynb) confirms that the official 2024 and 2026 Graduate School Academic Operation Regulation texts are distinct.
+
+Shared file and extraction functions are kept in [`src/pilot_corpus.py`](src/pilot_corpus.py), so each notebook contains only the code relevant to its own experiment.
 
 Current saved result:
 
@@ -590,9 +591,12 @@ Legacy HWP conversion required: 1
 Extraction failures: 0
 ```
 
-Install the notebook dependencies and execute it from the repository root:
+Install the notebook dependencies and execute the notebooks from the repository root:
 
 ```bash
 python -m pip install -r requirements-notebook.txt
-jupyter nbconvert --to notebook --execute --inplace notebooks/01_corpus_validation.ipynb
+jupyter nbconvert --to notebook --execute --inplace notebooks/00_download_sources.ipynb
+jupyter nbconvert --to notebook --execute --inplace notebooks/01_validate_sources.ipynb
+jupyter nbconvert --to notebook --execute --inplace notebooks/02_extract_source_text.ipynb
+jupyter nbconvert --to notebook --execute --inplace notebooks/03_compare_regulation_versions.ipynb
 ```
