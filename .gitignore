@@ -1,0 +1,10 @@
+# Collected source documents may have separate redistribution conditions.
+data/raw/
+
+# Local environments and generated artifacts
+.venv/
+__pycache__/
+*.pyc
+.env
+logs/
+artifacts/
